@@ -1,5 +1,6 @@
 import csv
 import datetime
+import json
 import os
 import re
 
@@ -20,7 +21,8 @@ def user_date():
         try:
             datetime.datetime.strptime(date_entry, '%d/%m/%Y')
         except ValueError:
-            print("{} is an invalid date. Please enter a correct date.".format(date_entry))
+            print("""
+{} is an invalid date. Please enter a correct date.""".format(date_entry))
             continue
         break
 
@@ -45,7 +47,8 @@ def user_time():
         try:
             int(time_spent)
         except ValueError:
-            print("Please input a rounded minute. i.e if 1.5, input 2; if 1.1 input 1")
+            print("""
+Please input a rounded minute. i.e if 1.5, input 2; if 1.1 input 1""")
             continue
         break
 
@@ -60,6 +63,13 @@ def create_csv():
     with open('log.csv', 'w') as csv_file:
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(['Date', 'Task title', 'Time spent', 'Notes'])
+
+
+def convert_to(row):
+    row_json = json.dumps(row)
+    my_dict = json.loads(row_json)
+    for keys, values in my_dict.items():
+        print(keys + ": " + values)
 
 
 def main():
@@ -109,7 +119,8 @@ e) Return to menu
                     with open('log.csv', 'r') as file:
                         for row in csv.DictReader(file):
                             if row['Date'] == date_entry:
-                                print(row)
+                                print("")
+                                convert_to(row)
 
                 if sub_menu == 'b':
                     clear_screen()
@@ -117,21 +128,27 @@ e) Return to menu
                     with open('log.csv', 'r') as file:
                         for row in csv.DictReader(file):
                             if row['Time spent'] == time_spent:
-                                print(row)
+                                print("")
+                                convert_to(row)
 
                 if sub_menu == 'c':
                     clear_screen()
-                    exact_search = input("Enter the exact phrase to search for: ")
+                    exact_search = input("""
+Enter the exact phrase to search for: """)
                     with open('log.csv', 'r') as file:
                         for row in csv.DictReader(file):
                             if row['Task title'] == exact_search:
-                                print(row)
+                                print("")
+                                convert_to(row)
                             elif row['Notes'] == exact_search:
-                                print(row)
+                                print("")
+                                convert_to(row)
                             elif row['Time spent'] == exact_search:
-                                print(row)
+                                print("")
+                                convert_to(row)
                             elif row['Date'] == exact_search:
-                                print(row)
+                                print("")
+                                convert_to(row)
 
                 if sub_menu == 'd':
                     clear_screen()
@@ -139,10 +156,28 @@ e) Return to menu
                     data = names_file.read()
                     names_file.close()
 
-                    regex_pattern = input("Enter a regular expression pattern, i.e. \d{2}[-/]\d{2}[-/]\d{4}: ")
+                    regex_input = input("""
+Enter a regular expression, i.e. \d{2}[-/]\d{2}[-/]\d{4}: """)
+                    regex_pattern = r'{}'.format(regex_input)
 
-                    line = re.compile(regex_pattern, re.X | re.MULTILINE)
-                    print(line.findall(data))
+                    line = re.compile(regex_pattern, re.I)
+                    new_list = line.findall(data)
+
+                    with open('log.csv', 'r') as file:
+                        for row in csv.DictReader(file):
+                            for value in new_list:
+                                if value == row['Task title']:
+                                    print("")
+                                    convert_to(row)
+                                elif value == row['Notes']:
+                                    print("")
+                                    convert_to(row)
+                                elif value == row['Time spent']:
+                                    print("")
+                                    convert_to(row)
+                                elif value == row['Date']:
+                                    print("")
+                                    convert_to(row)
 
                 if sub_menu == 'e':
                     break
@@ -159,4 +194,3 @@ e) Return to menu
 
 if __name__ == "__main__":
     main()
-
