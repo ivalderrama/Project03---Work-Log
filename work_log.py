@@ -158,9 +158,9 @@ Enter the exact phrase to search for: """)
 
                     regex_input = input("""
 Enter a regular expression, i.e. \d{2}[-/]\d{2}[-/]\d{4}: """)
-                    regex_pattern = r'{}'.format(regex_input)
+                    #regex_pattern = r'{}'.format(regex_input)
 
-                    line = re.compile(regex_pattern, re.I)
+                    line = re.compile(regex_input, re.I)
                     new_list = line.findall(data)
 
                     with open('log.csv', 'r') as file:
